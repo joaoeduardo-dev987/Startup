@@ -198,6 +198,7 @@ nav a:hover{color:var(--cyan);}
   right:0;top:0;bottom:0;
   width:52%;
   display:flex;align-items:center;justify-content:center;
+  padding-top:80px;box-sizing:border-box;
   pointer-events:none;
   z-index:2;
 }
@@ -220,7 +221,7 @@ nav a:hover{color:var(--cyan);}
   position:relative;
   z-index:2;
   width:auto;
-  max-height:92vh;
+  max-height:86vh;
   max-width:100%;
   transform-origin:center center;
   transition:transform .6s cubic-bezier(.22,1,.36,1);
@@ -242,15 +243,13 @@ nav a:hover{color:var(--cyan);}
 
 
 /* expression animations — somente translateY, sem rotate para não distorcer */
-.expr-0,.expr-2 { animation: float-idle 4.5s ease-in-out infinite; }
-.expr-1         { animation: type-bob   0.22s ease-in-out infinite; }
+.expr-0,.expr-1,.expr-2 { animation: float-idle 4.5s ease-in-out infinite; }
 .expr-3         { animation: confident  4.0s  ease-in-out infinite; }
 .expr-4         { animation: excited    2.6s  ease-in-out infinite; }
 
-@keyframes float-idle { 0%,100%{transform:translateY(0)}           50%{transform:translateY(-14px)} }
-@keyframes type-bob   { 0%,100%{transform:translateY(0)}           50%{transform:translateY(-5px)}  }
-@keyframes confident  { 0%,100%{transform:translateY(0) scale(1.04)} 50%{transform:translateY(-12px) scale(1.04)} }
-@keyframes excited    { 0%,100%{transform:scale(1.08) translateY(0)} 40%{transform:scale(1.11) translateY(-16px)} 70%{transform:scale(1.08) translateY(-8px)} }
+@keyframes float-idle { 0%,100%{transform:translateY(0)}           50%{transform:translateY(-8px)}  }
+@keyframes confident  { 0%,100%{transform:translateY(0) scale(1.03)} 50%{transform:translateY(-8px) scale(1.03)} }
+@keyframes excited    { 0%,100%{transform:scale(1.06) translateY(0)} 50%{transform:scale(1.06) translateY(-10px)} }
 
 /* glow — apenas sombra no chão, sem faixa lateral */
 #char-glow{
