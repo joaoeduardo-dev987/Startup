@@ -594,6 +594,12 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
 </div>
 
 <script>
+/* F5 / refresh sempre volta ao topo (cena 01 / intro) */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+window.addEventListener('load', () => window.scrollTo(0, 0));
+</script>
+<script>
 (function(){
   const pct      = document.getElementById('pre-pct');
   const bar      = document.getElementById('pre-bar');
