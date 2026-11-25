@@ -74,6 +74,7 @@ header{
 }
 .hdr{height:64px;display:flex;align-items:center;justify-content:space-between;}
 .logo{display:flex;align-items:center;gap:8px;font-family:var(--font-d);font-size:20px;font-weight:700;letter-spacing:-.01em;color:var(--fg);text-decoration:none;}
+.logo-tag{color:var(--cyan);font-family:var(--font-b);font-weight:700;text-shadow:0 0 10px rgba(0,229,255,.7);letter-spacing:-.02em;}
 .ldot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan),0 0 18px var(--cyan);}
 nav ul{display:none;align-items:center;gap:32px;list-style:none;}
 @media(min-width:768px){nav ul{display:flex;}}
@@ -465,12 +466,13 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
   stroke-width:3;
   fill:none;
   stroke-linecap:round;
-  stroke-dasharray:340;
-  stroke-dashoffset:340;
-  animation:draw-inf 2s 0.5s cubic-bezier(.4,0,.2,1) forwards, inf-pulse 3s 2.5s ease-in-out infinite;
+  /* dasharray/dashoffset definidos via JS com getTotalLength() */
+  stroke-dasharray:1;
+  stroke-dashoffset:1;
+  transition:stroke-dashoffset .05s linear;
 }
-@keyframes draw-inf{
-  to{ stroke-dashoffset:0; }
+#pre-infinity.complete path{
+  animation:inf-pulse 3s ease-in-out infinite;
 }
 @keyframes inf-pulse{
   0%,100%{ filter:drop-shadow(0 0 8px rgba(0,229,255,.5)); stroke-opacity:1; }
@@ -487,6 +489,14 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
   animation:pre-fadein .6s .4s ease forwards;
 }
 #pre-logo span{ color:var(--cyan); }
+#pre-logo .pre-tag{
+  color:var(--cyan);
+  font-family:var(--font-b);
+  font-weight:700;
+  letter-spacing:-.02em;
+  text-shadow:0 0 10px rgba(0,229,255,.7);
+  margin-right:6px;
+}
 
 #pre-pct{
   font-family:var(--font-d);
@@ -562,7 +572,7 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
         C85,70 100,45 100,45Z"/>
     </svg>
   </div>
-  <div id="pre-logo">Sys<span>.</span>covish</div>
+  <div id="pre-logo"><span class="pre-tag">&lt;/&gt;</span> Sys<span>.</span>covish</div>
   <div id="pre-pct">0<span style="font-size:.5em;opacity:.5">%</span></div>
   <div id="pre-bar-wrap">
     <div id="pre-bar"></div>
@@ -571,9 +581,17 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
 
 <script>
 (function(){
-  const pct  = document.getElementById('pre-pct');
-  const bar  = document.getElementById('pre-bar');
-  const wrap = document.getElementById('preloader');
+  const pct      = document.getElementById('pre-pct');
+  const bar      = document.getElementById('pre-bar');
+  const wrap     = document.getElementById('preloader');
+  const infEl   = document.getElementById('pre-infinity');
+  const infPath = infEl ? infEl.querySelector('path') : null;
+  /* mede comprimento real do path — dasharray/dashoffset exatos */
+  const DASH    = infPath ? infPath.getTotalLength() : 400;
+  if (infPath) {
+    infPath.style.strokeDasharray  = DASH;
+    infPath.style.strokeDashoffset = DASH;
+  }
 
   let current = 0;
   const target = 100;
@@ -596,6 +614,17 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
     pct.innerHTML = r + '<span style="font-size:.5em;opacity:.5">%</span>';
     bar.style.width = current + '%';
 
+    /* ∞ se completa ao chegar em 99% */
+    if (infPath) {
+      const drawPct = Math.min(current / 99, 1);
+      infPath.style.strokeDashoffset = DASH * (1 - drawPct);
+      /* garante fechamento completo ao bater em 99 */
+      if (drawPct >= 1) infPath.style.strokeDashoffset = 0;
+      if (current >= 99 && !infEl.classList.contains('complete')) {
+        infEl.classList.add('complete');
+      }
+    }
+
     if (current < target) {
       requestAnimationFrame(tick);
     } else {
@@ -610,7 +639,7 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
 <!-- HEADER -->
 <header>
   <div class="wrap hdr">
-    <a class="logo" href="#"><span>Sys.covish</span><span class="ldot"></span></a>
+    <a class="logo" href="#"><span class="logo-tag">&lt;/&gt;</span><span>Sys.covish</span><span class="ldot"></span></a>
     <nav>
       <ul>
         <li><a href="#servicos">Serviços</a></li>
@@ -804,7 +833,7 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
               <span class="material-symbols-outlined">chat</span><span>Chamar no WhatsApp</span>
             </a>
           </div>
-          <form class="cform" id="contact-form">
+          <form class="cform" id="contact-form" action="https://formspree.io/f/mdegbwpv" method="POST">
             <div class="field"><label for="nome">Nome</label><input id="nome" name="nome" type="text" placeholder="Seu nome completo" required/></div>
             <div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" placeholder="voce@empresa.com" required/></div>
             <div class="field"><label for="msg">Mensagem</label><textarea id="msg" name="msg" rows="4" placeholder="Conte um pouco sobre o seu projeto..." required></textarea></div>
@@ -823,7 +852,7 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
   <div class="wrap">
     <div class="finner">
       <div class="ftop">
-        <a class="logo" href="#"><span>Sys.covish</span><span class="ldot"></span></a>
+        <a class="logo" href="#"><span class="logo-tag">&lt;/&gt;</span><span>Sys.covish</span><span class="ldot"></span></a>
         <nav class="fnav"><a href="#servicos">Serviços</a><a href="#projetos">Projetos</a><a href="#contato">Contato</a></nav>
         <div class="fsoc">
           <a href="#" aria-label="Instagram"><span class="material-symbols-outlined">photo_camera</span></a>
@@ -965,10 +994,31 @@ footer{position:relative;z-index:2;padding-block:56px;border-top:1px solid var(-
     : null;
 
   /* form */
-  document.getElementById('contact-form')?.addEventListener('submit', function (e) {
+  document.getElementById('contact-form')?.addEventListener('submit', async function (e) {
     e.preventDefault();
-    const fb = document.getElementById('ffb');
-    if (fb) { fb.classList.add('on'); this.reset(); setTimeout(() => fb.classList.remove('on'), 5000); }
+    const fb  = document.getElementById('ffb');
+    const btn = this.querySelector('.btn-sub');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    try {
+      const res = await fetch(this.action, { method:'POST', body: new FormData(this), headers:{ Accept:'application/json' } });
+      if (res.ok) {
+        this.reset();
+        fb.textContent = 'Mensagem enviada com sucesso! Entraremos em contato em breve.';
+        fb.style.color = 'var(--cyan)';
+      } else {
+        fb.textContent = 'Erro ao enviar. Tente novamente ou entre em contato pelo WhatsApp.';
+        fb.style.color = '#ff6b6b';
+      }
+      fb.classList.add('on');
+      setTimeout(() => fb.classList.remove('on'), 6000);
+    } catch {
+      fb.textContent = 'Erro de conexão. Tente pelo WhatsApp.';
+      fb.style.color = '#ff6b6b';
+      fb.classList.add('on');
+    }
+    btn.disabled = false;
+    btn.textContent = 'Enviar mensagem';
   });
 
   /* active nav */
