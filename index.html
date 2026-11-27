@@ -431,7 +431,7 @@ html[data-sdir="up"] [data-scroll="visible"]{
 .srv-grid{display:grid;grid-template-columns:1fr;gap:20px;margin-top:40px;}
 @media(min-width:768px){.srv-grid{grid-template-columns:1fr 1fr;}}
 .srv-card{display:flex;flex-direction:column;justify-content:space-between;gap:28px;padding:36px;border-radius:4px;background:var(--bg-card);border:1px solid var(--border);transition:border-color .3s,box-shadow .3s,transform .3s;position:relative;overflow:hidden;}
-.srv-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow-c) 0%,transparent 60%);opacity:0;transition:opacity .3s;}
+.srv-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow-c) 0%,transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none;}
 .srv-card:hover{border-color:var(--border-hi);transform:translateY(-4px);box-shadow:0 0 32px var(--glow-c);}
 .srv-card:hover::before{opacity:1;}
 .srv-card.dim{background:var(--bg-02);opacity:.65;}
